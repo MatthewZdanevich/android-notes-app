@@ -21,19 +21,19 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
+    /// Interface initialization
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Full screen mode
-
         EdgeToEdge.enable(this);
 
         // ViewGroups
-
         ScrollView scrollViewRoot = createRootScrollView();
         LinearLayout linearLayoutMain = createMainLinearLayout();
 
+        // Handling system indents
         ViewCompat.setOnApplyWindowInsetsListener(linearLayoutMain, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left + 32, systemBars.top, systemBars.right + 32, systemBars.bottom + 32);
@@ -41,23 +41,21 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Views
-
         TextView tvTitle = createApplicationTitle();
         EditText etNote = createNoteEditText();
         Button btnAddNote = createAddNoteButton(linearLayoutMain, etNote);
 
-        // Setting interface
-
+        // Add elements to the root container
         scrollViewRoot.addView(linearLayoutMain);
-
         linearLayoutMain.addView(tvTitle);
         linearLayoutMain.addView(etNote);
         linearLayoutMain.addView(btnAddNote);
 
+        // Setting the root container
         setContentView(scrollViewRoot);
     }
 
-    /// Scroll to main container
+    /// Creating the root ScrollView
     private ScrollView createRootScrollView() {
         ScrollView scrollView = new ScrollView(this);
         scrollView.setBackgroundColor(Color.rgb(255, 237, 250));
@@ -68,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         return scrollView;
     }
 
-    /// Main container
+    /// Creating the main LinearLayout
     private LinearLayout createMainLinearLayout() {
         LinearLayout linearLayoutRoot = new LinearLayout(this);
         linearLayoutRoot.setOrientation(LinearLayout.VERTICAL);
@@ -77,11 +75,10 @@ public class MainActivity extends AppCompatActivity {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
         ));
-
         return linearLayoutRoot;
     }
 
-    /// Title for an application
+    /// Creating the title for an application
     @SuppressLint("SetTextI18n")
     private TextView createApplicationTitle() {
         TextView tvTitle = new TextView(this);
@@ -99,17 +96,21 @@ public class MainActivity extends AppCompatActivity {
         return tvTitle;
     }
 
-    /// Field to enter the text for a note
+    /// Creating the field to enter the text for a note
     private EditText createNoteEditText() {
         EditText etNote = new EditText(this);
         etNote.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         etNote.setHint("Enter text for note");
         etNote.setTextColor(Color.rgb(190, 89, 133));
         etNote.setHintTextColor(Color.rgb(255, 184, 224));
+        etNote.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
         return etNote;
     }
 
-    /// Button to add a note
+    /// Creating the button to add a note
     @SuppressLint("SetTextI18n")
     private Button createAddNoteButton(LinearLayout linearLayoutRoot, EditText etNote) {
         Button btnAddTextView = new Button(this);
@@ -118,20 +119,17 @@ public class MainActivity extends AppCompatActivity {
         btnAddTextView.setBackgroundColor(Color.rgb(236, 127, 169));
         btnAddTextView.setTextColor(Color.rgb(255, 237, 250));
         btnAddTextView.setOnClickListener(v -> createNote(linearLayoutRoot, etNote));
+        btnAddTextView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
         return btnAddTextView;
     }
 
-    /// Create a note
+    /// Creating a note
     @SuppressLint("SetTextI18n")
     private void createNote(LinearLayout linearLayoutRoot, EditText etNote) {
-
-        // Text from EditText
-
-        String note = etNote.getText().toString();
-        etNote.setText("");
-
         // LinearLayout for a note
-
         LinearLayout linearLayoutNote = new LinearLayout(this);
         linearLayoutNote.setOrientation(LinearLayout.HORIZONTAL);
         linearLayoutNote.setBackgroundColor(Color.rgb(255, 184, 224));
@@ -143,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
         linearLayoutNote.setLayoutParams(linearLayoutNoteLayoutParams);
 
         // Button to remove a note
-
         Button btnRemoveNote = new Button(this);
         btnRemoveNote.setText("Done");
         btnRemoveNote.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
@@ -158,6 +155,8 @@ public class MainActivity extends AppCompatActivity {
         btnRemoveNote.setLayoutParams(btnRemoveNoteLayoutParams);
 
         // TextView to display the text of a note
+        String note = etNote.getText().toString();
+        etNote.setText("");
 
         TextView tvNote = new TextView(this);
         tvNote.setText(note);
@@ -173,15 +172,15 @@ public class MainActivity extends AppCompatActivity {
         tvNoteLayoutParams.setMargins(16, 16, 16, 16);
         tvNote.setLayoutParams(tvNoteLayoutParams);
 
-        // Display a note
-
+        // Add elements to the note container
         linearLayoutNote.addView(btnRemoveNote);
         linearLayoutNote.addView(tvNote);
 
+        // Add elements to the root container
         linearLayoutRoot.addView(linearLayoutNote);
     }
 
-    /// Remove a note
+    /// Removing a note
     private void removeNote(LinearLayout linearLayoutRoot, LinearLayout linearLayoutNote) {
         linearLayoutRoot.removeView(linearLayoutNote);
     }
