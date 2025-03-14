@@ -1,10 +1,10 @@
 package com.example.notesapp;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -129,10 +130,17 @@ public class MainActivity extends AppCompatActivity {
     /// Creating a note
     @SuppressLint("SetTextI18n")
     private void createNote(LinearLayout linearLayoutRoot, EditText etNote) {
+        // Note text check
+        if (etNote.getText().toString().isEmpty()) {
+            showToast(this, "First enter the note text");
+            return;
+        }
+
         // LinearLayout for a note
         LinearLayout linearLayoutNote = new LinearLayout(this);
-        linearLayoutNote.setOrientation(LinearLayout.HORIZONTAL);
+        linearLayoutNote.setOrientation(LinearLayout.VERTICAL);
         linearLayoutNote.setBackgroundColor(Color.rgb(255, 184, 224));
+        linearLayoutNote.setPadding(16, 16, 16, 16);
         LinearLayout.LayoutParams linearLayoutNoteLayoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -140,19 +148,15 @@ public class MainActivity extends AppCompatActivity {
         linearLayoutNoteLayoutParams.setMargins(0, 16, 0, 0);
         linearLayoutNote.setLayoutParams(linearLayoutNoteLayoutParams);
 
-        // Button to remove a note
-        Button btnRemoveNote = new Button(this);
-        btnRemoveNote.setText("Done");
-        btnRemoveNote.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-        btnRemoveNote.setBackgroundColor(Color.rgb(236, 127, 169));
-        btnRemoveNote.setTextColor(Color.rgb(255, 237, 250));
-        btnRemoveNote.setOnClickListener(v -> removeNote(linearLayoutRoot, linearLayoutNote));
-        LinearLayout.LayoutParams btnRemoveNoteLayoutParams = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
+        // LinearLayout for buttons
+        LinearLayout linearLayoutButtons = new LinearLayout(this);
+        linearLayoutButtons.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams linearLayoutButtonsLayoutParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        btnRemoveNoteLayoutParams.setMargins(16, 16, 16, 16);
-        btnRemoveNote.setLayoutParams(btnRemoveNoteLayoutParams);
+        linearLayoutButtonsLayoutParams.setMargins(0, 16, 0, 0);
+        linearLayoutButtons.setLayoutParams(linearLayoutButtonsLayoutParams);
 
         // TextView to display the text of a note
         String note = etNote.getText().toString();
@@ -163,25 +167,66 @@ public class MainActivity extends AppCompatActivity {
         tvNote.setTypeface(null, Typeface.BOLD);
         tvNote.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         tvNote.setTextColor(Color.rgb(190, 89, 133));
-        tvNote.setSingleLine(true);
-        tvNote.setEllipsize(TextUtils.TruncateAt.END);
         LinearLayout.LayoutParams tvNoteLayoutParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        tvNote.setLayoutParams(tvNoteLayoutParams);
+
+        // Button to complete a note
+        Button btnCompleteNote = new Button(this);
+        btnCompleteNote.setText("Done");
+        btnCompleteNote.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        btnCompleteNote.setBackgroundColor(Color.rgb(236, 127, 169));
+        btnCompleteNote.setTextColor(Color.rgb(255, 237, 250));
+        LinearLayout.LayoutParams btnCompleteNoteLayoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        tvNoteLayoutParams.setMargins(16, 16, 16, 16);
-        tvNote.setLayoutParams(tvNoteLayoutParams);
+        btnCompleteNoteLayoutParams.setMargins(0, 0, 16, 0);
+        btnCompleteNote.setLayoutParams(btnCompleteNoteLayoutParams);
+
+        // Button to remove a note
+        Button btnRemoveNote = new Button(this);
+        btnRemoveNote.setText("Remove");
+        btnRemoveNote.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        btnRemoveNote.setBackgroundColor(Color.rgb(236, 127, 169));
+        btnRemoveNote.setTextColor(Color.rgb(255, 237, 250));
+        LinearLayout.LayoutParams btnRemoveNoteLayoutParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        btnRemoveNote.setLayoutParams(btnRemoveNoteLayoutParams);
+
+        // Button event listeners
+        btnRemoveNote.setOnClickListener(v -> removeNote(linearLayoutRoot, linearLayoutNote));
+        btnCompleteNote.setOnClickListener(v -> completeNote(linearLayoutNote, tvNote, btnCompleteNote, btnRemoveNote));
 
         // Add elements to the note container
-        linearLayoutNote.addView(btnRemoveNote);
         linearLayoutNote.addView(tvNote);
+        linearLayoutButtons.addView(btnCompleteNote);
+        linearLayoutButtons.addView(btnRemoveNote);
+        linearLayoutNote.addView(linearLayoutButtons);
 
         // Add elements to the root container
         linearLayoutRoot.addView(linearLayoutNote);
     }
 
+    /// Completing a note
+    private void completeNote(LinearLayout linearLayoutNote, TextView tvNote, Button btnCompleteNote, Button btnRemoveNote) {
+        linearLayoutNote.setBackgroundColor(Color.argb(70, 255, 184, 224));
+        tvNote.setTextColor(Color.argb(70, 190, 89, 133));
+        btnCompleteNote.setBackgroundColor(Color.argb(70, 236, 127, 169));
+        btnRemoveNote.setBackgroundColor(Color.argb(70, 236, 127, 169));
+    }
+
     /// Removing a note
     private void removeNote(LinearLayout linearLayoutRoot, LinearLayout linearLayoutNote) {
         linearLayoutRoot.removeView(linearLayoutNote);
+    }
+
+    /// Show a message
+    public void showToast(Context context, String message) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 }
