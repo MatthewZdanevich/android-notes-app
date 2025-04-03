@@ -22,6 +22,9 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
+    long timePressed;
+    Toast backToast;
+
     /// Interface initialization
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +57,20 @@ public class MainActivity extends AppCompatActivity {
 
         // Setting the root container
         setContentView(scrollViewRoot);
+    }
+
+    /// Double press "Back" to exit
+    @Override
+    public void onBackPressed() {
+        if (timePressed + 2000 > System.currentTimeMillis()) {
+            backToast.cancel();
+            super.onBackPressed();
+        }
+        else {
+            backToast = Toast.makeText(getBaseContext(), "Press again to exit", Toast.LENGTH_SHORT);
+            backToast.show();
+        }
+        timePressed = System.currentTimeMillis();
     }
 
     /// Creating the root ScrollView
